@@ -31,11 +31,15 @@ export function normalizeSlot(slot: unknown): SlotType | null {
 }
 
 export function getSupabaseConfig() {
-  const supabaseUrl = process.env.SUPABASE_URL?.trim() || '';
+  const supabaseUrl = (
+    process.env.SUPABASE_URL ||
+    process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    ''
+  ).trim();
   const supabaseKey = (
     process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.SUPABASE_SECRET_KEY ||
     process.env.SUPABASE_KEY ||
-    process.env.SUPABASE_ANON_KEY ||
     ''
   ).trim();
   const bucketName = (process.env.SUPABASE_BUCKET || 'birthday-photos').trim();
@@ -180,11 +184,11 @@ export async function uploadSlotPhoto(
   originalName?: string
 ): Promise<{ url: string }> {
   const client = getSupabase();
-  const { bucketName, supabaseUrl } = getSupabaseConfig();
+  const { bucketName } = getSupabaseConfig();
 
   if (!client) {
     throw new Error(
-      'Supabase credentials are not configured. Please ensure SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are defined in your .env file.'
+      'Supabase credentials are not configured. Please ensure SUPABASE_URL (or NEXT_PUBLIC_SUPABASE_URL) and SUPABASE_SECRET_KEY (or SUPABASE_SERVICE_ROLE_KEY) are set in the environment.'
     );
   }
 
